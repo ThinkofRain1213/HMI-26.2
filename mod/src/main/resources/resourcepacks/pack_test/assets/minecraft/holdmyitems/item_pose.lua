@@ -9,11 +9,9 @@ local bowDAMPING = 0.8
 local bowINTENSITY = 0.28
 local l = (context.bl and 1) or -1
 
--- PERSONAL-TWEAK: all regular blocks bottom-align to the pressure plate's current height.
--- PP_BOTTOM = the plate's height offset (block units, 0.0625 = 1 texture px).
--- The plate itself is a regular block, so it keeps this height; every other regular
--- block's bottom is pushed to the same Y.
-local PP_BOTTOM = 0.00390625 -- 0.0625 px up
+-- PERSONAL-TWEAK: the pressure plate's tuned +0.00390625 (0.0625px) is merged into the
+-- 960 section's moveY (common block pipeline) — pure translations commute, so the final
+-- transform is identical for every 960-section block; the plate has no special code.
 
 
 function easeCustom(t)
@@ -386,10 +384,6 @@ elseif I:isBlock(context.item) then
     M:moveY(mat, -0.025)
     M:moveZ(mat, -0.025)
     M:rotateX(mat, -5)
-    -- PERSONAL-TWEAK: bottom-align every regular block to the pressure plate's height.
-    -- (The plate is a regular block too, so it keeps its current height; everything
-    --  else's bottom is pushed to the same Y.)
-    M:moveY(mat, PP_BOTTOM)
 else
     if not I:isBlock(context.item) and not I:isEmpty(context.item) and I:getUseAction(context.item) == "none" and I:getUseAction(context.item) ~= "crossbow" then
         if I:isIn(context.item, Tags:getVanillaTag("axes")) or I:isOf(context.item, Items:get("minecraft:mace")) then
@@ -962,7 +956,7 @@ I:isOf(context.item, Items:get("minecraft:bell")) then
 M:moveX(mat, -0.025 * l) -- 5.1.2: pulled inward 0.025 (x-axis, towards body)
 M:moveZ(mat, -0.075) -- 5.1.2: moved forward 0.025 (towards -z) from -0.05
 if not I:isLantern(context.item) then
-M:moveY(mat, -0.065625) -- 5.1.2: raised ~1.35 texture px (0.084375) from -0.15
+M:moveY(mat, -0.06171875) -- 5.1.2: raised ~1.35 texture px (0.084375) from -0.15; PERSONAL-TWEAK: +0.00390625 (pressure plate's tuned height, merged; identical transform, translations commute)
 M:rotateZ(mat, 6 * l)
 M:rotateX(mat, -8)
 end

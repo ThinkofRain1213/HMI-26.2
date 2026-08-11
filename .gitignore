@@ -5,3 +5,24 @@ tools/
 **/run/
 .jdks/
 gradle-dist/
+
+# --- Secrets / credentials (never commit) ---
+.env
+.env.*
+!.env.example
+local.properties
+*.key
+*.pem
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.ppk
+id_rsa
+id_dsa
+id_ecdsa
+id_ed25519
+secrets.*
+credentials*.json
+service_account*.json
+gradle.properties.local

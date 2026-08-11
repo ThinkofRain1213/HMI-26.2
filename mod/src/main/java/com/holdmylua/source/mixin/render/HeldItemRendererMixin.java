@@ -579,10 +579,9 @@ public abstract class HeldItemRendererMixin {
                   // old code only ever rendered the default (FOOT) half. Render both
                   // halves with the head at the origin and the foot +1 z, matching the
                   // 26.2 item model (headboard points forward along the hand).
-                  // PERSONAL-TWEAK: HEAD/FOOT swapped (foot at origin, head at +1 z).
                   ((AlternateBlockRenderer)(Object)this.minecraft.getModelManager().getBlockStateModelSet())
                      .renderSingleBlockWithEmission(
-                        (BlockState)blockState.setValue(BlockStateProperties.BED_PART, BedPart.FOOT),
+                        (BlockState)blockState.setValue(BlockStateProperties.BED_PART, BedPart.HEAD),
                         matrices,
                         orderedRenderCommandQueue,
                         light,
@@ -593,7 +592,7 @@ public abstract class HeldItemRendererMixin {
                   matrices.translate(0.0F, 0.0F, 1.0F);
                   ((AlternateBlockRenderer)(Object)this.minecraft.getModelManager().getBlockStateModelSet())
                      .renderSingleBlockWithEmission(
-                        (BlockState)blockState.setValue(BlockStateProperties.BED_PART, BedPart.HEAD),
+                        (BlockState)blockState.setValue(BlockStateProperties.BED_PART, BedPart.FOOT),
                         matrices,
                         orderedRenderCommandQueue,
                         light,

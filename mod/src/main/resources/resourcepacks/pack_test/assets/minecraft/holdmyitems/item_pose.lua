@@ -146,6 +146,10 @@ local sw = context.mainHand and mainHandSwitch or offHandSwitch
 
 local mat = context.matrices
 
+-- PERSONAL-TWEAK: pull held items 1 texture pixel (0.0625 block unit) inward on X.
+-- l = 1 for right arm, -1 for left arm, so -0.0625 * l always moves toward body center.
+M:moveX(mat, -0.0625 * l)
+
 local hic = context.mainHand and Easings:easeInOutSine(hitImpactCounter) or hitImpactCounterO
 pitchSpeed = pitchSpeed + ((P:getSpeed(context.player) * 22 * walkSmoother * -1) - (M:sin(context.mainHandSwingProgress * 3.14)) * 8 + fall * 3 + M:sin(sneak * 3.14) * 0.3 + (P:getPitch(context.player) - prevPitch)) * INTENSITY * context.deltaTime * 30
 if I:getUseAction(context.item) == "block" and context.mainHand and not I:isIn(context.item, Tags:getVanillaTag("swords")) then

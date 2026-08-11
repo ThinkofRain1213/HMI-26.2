@@ -9,6 +9,14 @@ local bowDAMPING = 0.8
 local bowINTENSITY = 0.28
 local l = (context.bl and 1) or -1
 
+-- PERSONAL-TWEAK: pressure plate position params (texture pixels; 1px = 0.0625 block).
+-- ppX: + = inward (toward body center, both hands), - = outward
+-- ppY: + = up, - = down
+-- ppZ: + = away from player, - = toward player
+local ppX = 0
+local ppY = 0
+local ppZ = 0
+
 
 function easeCustom(t)
     local t2 = t * t
@@ -149,6 +157,13 @@ local mat = context.matrices
 -- PERSONAL-TWEAK: pull held items 1 texture pixel (0.0625 block unit) inward on X.
 -- l = 1 for right arm, -1 for left arm, so -0.0625 * l always moves toward body center.
 M:moveX(mat, -0.0625 * l)
+
+-- PERSONAL-TWEAK: apply pressure-plate-specific position (additional, in hand space).
+if I:getName(context.item):find("pressure_plate") then
+    M:moveX(mat, -ppX * 0.0625 * l)
+    M:moveY(mat, ppY * 0.0625)
+    M:moveZ(mat, ppZ * 0.0625)
+end
 
 local hic = context.mainHand and Easings:easeInOutSine(hitImpactCounter) or hitImpactCounterO
 pitchSpeed = pitchSpeed + ((P:getSpeed(context.player) * 22 * walkSmoother * -1) - (M:sin(context.mainHandSwingProgress * 3.14)) * 8 + fall * 3 + M:sin(sneak * 3.14) * 0.3 + (P:getPitch(context.player) - prevPitch)) * INTENSITY * context.deltaTime * 30

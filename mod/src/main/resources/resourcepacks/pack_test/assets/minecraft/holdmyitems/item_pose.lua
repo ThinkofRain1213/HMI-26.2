@@ -9,18 +9,11 @@ local bowDAMPING = 0.8
 local bowINTENSITY = 0.28
 local l = (context.bl and 1) or -1
 
--- PERSONAL-TWEAK: pressure plate position params (block units, same convention as source; 0.0625 = 1 texture px).
--- ppX: + = right (outward for right hand, mirrored by l), - = left (inward)
--- ppY: + = up, - = down
--- ppZ: + = away from player, - = toward player
-local ppX = 0
-local ppY = 0.00390625 -- 0.0625 px up
-local ppZ = 0
--- PERSONAL-TWEAK: block hold height calibration (texture pixels, + = up, 0 = original baseline).
--- Formula-based lower-1/3 attempts (v0: -H/3, v1: +2H/3) both overshot badly (render
--- pipeline uses 0.3F scale + -0.45 translate, anchor not derivable analytically),
--- so calibrating manually: user reports pixel offset, we turn the knob.
-local L13_PX = 0
+-- PERSONAL-TWEAK: all regular blocks bottom-align to the pressure plate's current height.
+-- PP_BOTTOM = the plate's height offset (block units, 0.0625 = 1 texture px).
+-- The plate itself is a regular block, so it keeps this height; every other regular
+-- block's bottom is pushed to the same Y.
+local PP_BOTTOM = 0.00390625 -- 0.0625 px up
 
 
 function easeCustom(t)
@@ -162,13 +155,6 @@ local mat = context.matrices
 -- PERSONAL-TWEAK: pull held items 1 texture pixel (0.0625 block unit) inward on X.
 -- l = 1 for right arm, -1 for left arm, so -0.0625 * l always moves toward body center.
 M:moveX(mat, -0.0625 * l)
-
--- PERSONAL-TWEAK: apply pressure-plate-specific position (additional, in hand space).
-if I:getName(context.item):find("pressure_plate") then
-    M:moveX(mat, ppX * l)
-    M:moveY(mat, ppY)
-    M:moveZ(mat, ppZ)
-end
 
 local hic = context.mainHand and Easings:easeInOutSine(hitImpactCounter) or hitImpactCounterO
 pitchSpeed = pitchSpeed + ((P:getSpeed(context.player) * 22 * walkSmoother * -1) - (M:sin(context.mainHandSwingProgress * 3.14)) * 8 + fall * 3 + M:sin(sneak * 3.14) * 0.3 + (P:getPitch(context.player) - prevPitch)) * INTENSITY * context.deltaTime * 30
@@ -400,12 +386,10 @@ elseif I:isBlock(context.item) then
     M:moveY(mat, -0.025)
     M:moveZ(mat, -0.025)
     M:rotateX(mat, -5)
-    -- PERSONAL-TWEAK: block hold height (manual calibration, L13_PX texture pixels, + up).
-    -- Flat items (H <= 0.25: pressure plates, trapdoors, flowers...) keep the reference.
-    local H = context.blockHeight or 1
-    if H > 0.25 then
-        M:moveY(mat, L13_PX * 0.0625)
-    end
+    -- PERSONAL-TWEAK: bottom-align every regular block to the pressure plate's height.
+    -- (The plate is a regular block too, so it keeps its current height; everything
+    --  else's bottom is pushed to the same Y.)
+    M:moveY(mat, PP_BOTTOM)
 else
     if not I:isBlock(context.item) and not I:isEmpty(context.item) and I:getUseAction(context.item) == "none" and I:getUseAction(context.item) ~= "crossbow" then
         if I:isIn(context.item, Tags:getVanillaTag("axes")) or I:isOf(context.item, Items:get("minecraft:mace")) then

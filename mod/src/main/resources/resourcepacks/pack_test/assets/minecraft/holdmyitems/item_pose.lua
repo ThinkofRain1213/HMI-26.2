@@ -16,6 +16,8 @@ local l = (context.bl and 1) or -1
 local ppX = 0
 local ppY = 0.00390625 -- 0.0625 px up
 local ppZ = 0
+-- PERSONAL-TWEAK: lower-1/3 hold rule fine-tune (block units, + = up)
+local L13_BIAS = 0
 
 
 function easeCustom(t)
@@ -397,12 +399,13 @@ elseif I:isBlock(context.item) then
     M:rotateX(mat, -5)
     -- PERSONAL-TWEAK: lower-1/3 hold rule (pressure plate height as reference).
     -- context.blockHeight = real block height from Java (blockState shape, block units).
-    -- Every block's lower-1/3 point sits at the pressure plate's height; flat items
-    -- (H <= 0.25: pressure plates, trapdoors, flowers...) keep the reference height.
-    -- Correction = ppY - H/3 (ppY keeps the reference in sync with the plate's own tweak).
+    -- Empirically tuned 2026-08-11: the model anchor behaves like the block TOP, so
+    -- the bottom-based formula landed everything exactly one height too low.
+    -- Anchor (top) -> Y_ref + 2H/3  makes the lower-1/3 point sit at Y_ref.
+    -- Flat items (H <= 0.25: pressure plates, trapdoors, flowers...) keep the reference.
     local H = context.blockHeight or 1
     if H > 0.25 then
-        M:moveY(mat, ppY - H / 3)
+        M:moveY(mat, ppY + 2 * H / 3 + L13_BIAS)
     end
 else
     if not I:isBlock(context.item) and not I:isEmpty(context.item) and I:getUseAction(context.item) == "none" and I:getUseAction(context.item) ~= "crossbow" then

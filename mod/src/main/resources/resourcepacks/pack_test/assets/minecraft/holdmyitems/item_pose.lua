@@ -9,12 +9,12 @@ local bowDAMPING = 0.8
 local bowINTENSITY = 0.28
 local l = (context.bl and 1) or -1
 
--- PERSONAL-TWEAK: pressure plate position params (texture pixels; 1px = 0.0625 block).
--- ppX: + = inward (toward body center, both hands), - = outward
+-- PERSONAL-TWEAK: pressure plate position params (block units, same convention as source; 0.0625 = 1 texture px).
+-- ppX: + = right (outward for right hand, mirrored by l), - = left (inward)
 -- ppY: + = up, - = down
 -- ppZ: + = away from player, - = toward player
 local ppX = 0
-local ppY = 0
+local ppY = 0.03125 -- 0.5 px up
 local ppZ = 0
 
 
@@ -160,9 +160,9 @@ M:moveX(mat, -0.0625 * l)
 
 -- PERSONAL-TWEAK: apply pressure-plate-specific position (additional, in hand space).
 if I:getName(context.item):find("pressure_plate") then
-    M:moveX(mat, -ppX * 0.0625 * l)
-    M:moveY(mat, ppY * 0.0625)
-    M:moveZ(mat, ppZ * 0.0625)
+    M:moveX(mat, ppX * l)
+    M:moveY(mat, ppY)
+    M:moveZ(mat, ppZ)
 end
 
 local hic = context.mainHand and Easings:easeInOutSine(hitImpactCounter) or hitImpactCounterO

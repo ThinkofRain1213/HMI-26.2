@@ -14,7 +14,7 @@ local l = (context.bl and 1) or -1
 -- ppY: + = up, - = down
 -- ppZ: + = away from player, - = toward player
 local ppX = 0
-local ppY = 0.015625 -- 0.25 px up
+local ppY = 0.0078125 -- 0.125 px up
 local ppZ = 0
 
 

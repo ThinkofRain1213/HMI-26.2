@@ -16,8 +16,11 @@ local l = (context.bl and 1) or -1
 local ppX = 0
 local ppY = 0.00390625 -- 0.0625 px up
 local ppZ = 0
--- PERSONAL-TWEAK: lower-1/3 hold rule fine-tune (block units, + = up)
-local L13_BIAS = 0
+-- PERSONAL-TWEAK: block hold height calibration (texture pixels, + = up, 0 = original baseline).
+-- Formula-based lower-1/3 attempts (v0: -H/3, v1: +2H/3) both overshot badly (render
+-- pipeline uses 0.3F scale + -0.45 translate, anchor not derivable analytically),
+-- so calibrating manually: user reports pixel offset, we turn the knob.
+local L13_PX = 0
 
 
 function easeCustom(t)
@@ -397,15 +400,11 @@ elseif I:isBlock(context.item) then
     M:moveY(mat, -0.025)
     M:moveZ(mat, -0.025)
     M:rotateX(mat, -5)
-    -- PERSONAL-TWEAK: lower-1/3 hold rule (pressure plate height as reference).
-    -- context.blockHeight = real block height from Java (blockState shape, block units).
-    -- Empirically tuned 2026-08-11: the model anchor behaves like the block TOP, so
-    -- the bottom-based formula landed everything exactly one height too low.
-    -- Anchor (top) -> Y_ref + 2H/3  makes the lower-1/3 point sit at Y_ref.
+    -- PERSONAL-TWEAK: block hold height (manual calibration, L13_PX texture pixels, + up).
     -- Flat items (H <= 0.25: pressure plates, trapdoors, flowers...) keep the reference.
     local H = context.blockHeight or 1
     if H > 0.25 then
-        M:moveY(mat, ppY + 2 * H / 3 + L13_BIAS)
+        M:moveY(mat, L13_PX * 0.0625)
     end
 else
     if not I:isBlock(context.item) and not I:isEmpty(context.item) and I:getUseAction(context.item) == "none" and I:getUseAction(context.item) ~= "crossbow" then

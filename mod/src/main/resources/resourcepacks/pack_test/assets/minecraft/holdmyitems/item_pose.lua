@@ -570,6 +570,7 @@ if I:isOf(context.item, Items:get("minecraft:filled_map")) then
     M:rotateZ(mat, 5 * l * smoother)
 elseif I:shouldTranslateItem(context.item) and not I:isBlock(context.item) and not I:isOf(context.item, Items:get("minecraft:bone")) and I:getUseAction(context.item) ~= "bow" and I:getUseAction(context.item) ~= "spear" then
     M:moveX(mat, -0.05 * l)
+    M:moveY(mat, 0.125) -- 5.1.2: raised 2 texture px total (buckets/boats sat too low)
     M:rotateX(mat, -8)
     M:rotateY(mat, -10 * l)
     M:rotateZ(mat, 6 * l)
@@ -785,8 +786,6 @@ local itemIds = {
 }
 
 
-
-
 -- The 'for (let id of itemIds)' loop is translated to 'for _, id in ipairs(itemIds) do'
 
 for _, id in ipairs(itemIds) do
@@ -802,7 +801,6 @@ if(I:isIn(context.item, Tags:getVanillaTag(id))) then
 renderAsBlock:put(I:getName(context.item), false)
 end
 end
-
 
 
 itemSwingSpeed:put('minecraft:trident', 12)
@@ -933,6 +931,7 @@ M:rotateX(mat, -90 * Easings:easeOutBack(M:sin(context.mainHand and riptideCount
 M:rotateZ(mat, -45 * l * Easings:easeOutBack(M:sin(context.mainHand and riptideCounter or riptideCounterO * 3.14)))
 end
 
+-- 5.1.2: restored the 26.2 block grip (applyBlockRotation), upscale lowered 1.1 -> 1.0
 if I:isIn(context.item, Tags:getVanillaTag("hanging_signs"))
 or I:isIn(context.item, Tags:getVanillaTag("doors")) 
 or I:isIn(context.item, Tags:getVanillaTag("skulls"))
@@ -946,14 +945,15 @@ I:isOf(context.item, Items:get("minecraft:leaf_litter")) and not
 I:isOf(context.item, Items:get("minecraft:wildflowers")) and not
 I:isOf(context.item, Items:get("minecraft:redstone")) and not
 I:isOf(context.item, Items:get("minecraft:bell")) then
-M:moveZ(mat, -0.05)
+M:moveX(mat, -0.025 * l) -- 5.1.2: pulled inward 0.025 (x-axis, towards body)
+M:moveZ(mat, -0.075) -- 5.1.2: moved forward 0.025 (towards -z) from -0.05
 if not I:isLantern(context.item) then
-M:moveY(mat, -0.15)
+M:moveY(mat, -0.065625) -- 5.1.2: raised ~1.35 texture px (0.084375) from -0.15
 M:rotateZ(mat, 6 * l)
 M:rotateX(mat, -8)
 end
 M:rotateY(mat, 25 * l)
-M:scale(mat, 1.1, 1.1, 1.1)
+M:scale(mat, 0.9375, 0.9375, 0.9375)
 end
 
 

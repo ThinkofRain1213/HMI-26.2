@@ -395,6 +395,15 @@ elseif I:isBlock(context.item) then
     M:moveY(mat, -0.025)
     M:moveZ(mat, -0.025)
     M:rotateX(mat, -5)
+    -- PERSONAL-TWEAK: lower-1/3 hold rule (pressure plate height as reference).
+    -- context.blockHeight = real block height from Java (blockState shape, block units).
+    -- Every block's lower-1/3 point sits at the pressure plate's height; flat items
+    -- (H <= 0.25: pressure plates, trapdoors, flowers...) keep the reference height.
+    -- Correction = ppY - H/3 (ppY keeps the reference in sync with the plate's own tweak).
+    local H = context.blockHeight or 1
+    if H > 0.25 then
+        M:moveY(mat, ppY - H / 3)
+    end
 else
     if not I:isBlock(context.item) and not I:isEmpty(context.item) and I:getUseAction(context.item) == "none" and I:getUseAction(context.item) ~= "crossbow" then
         if I:isIn(context.item, Tags:getVanillaTag("axes")) or I:isOf(context.item, Items:get("minecraft:mace")) then

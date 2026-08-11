@@ -23,8 +23,13 @@ import net.minecraft.client.gui.components.toasts.SystemToast;
 import net.minecraft.client.gui.components.toasts.SystemToast.SystemToastId;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.network.chat.Component;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
@@ -100,6 +105,16 @@ public class LuaScriptCache {
    ) {
       if (this.canRun) {
          try {
+            // PERSONAL-TWEAK: expose the held block's real height (0..1+ block units) to Lua.
+            float blockHeight = 1.0F;
+            if (item.getItem() instanceof BlockItem) {
+               BlockState bs = ((BlockItem)item.getItem()).getBlock().defaultBlockState();
+               Level level = Minecraft.getInstance().level;
+               if (level != null) {
+                  blockHeight = (float)bs.getShape(level, BlockPos.ZERO).max(Direction.Axis.Y);
+               }
+            }
+            context.blockHeight = blockHeight;
             context.update(
                matrices,
                bl,

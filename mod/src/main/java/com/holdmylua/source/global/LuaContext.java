@@ -12,6 +12,7 @@ public class LuaContext {
    public boolean bl;
    public float swingProgress;
    public ItemStack item;
+   public float blockHeight = 1.0F;
    public AbstractClientPlayer player;
    public InteractionHand hand;
    public boolean mainHand;
